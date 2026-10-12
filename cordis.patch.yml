@@ -11,4 +11,4 @@
 # panel, and the undo bar (conversation.input.dock).
 - insert:
     - id: prompt-enhance
-      name: dsh-prompt-enhance
+      name: dsh-prompt-enhance-dsh02
