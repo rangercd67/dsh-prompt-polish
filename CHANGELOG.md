@@ -4,6 +4,11 @@ All notable changes are documented here. Versions follow [npm](https://www.npmjs
 
 ## 0.3.0 — dsh desktop / `0.2.0-rc.2` fork (unreleased)
 
+See [docs/release-0.3.0.md](./docs/release-0.3.0.md) for the install, verification
+and rollback steps, and [docs/dsh-0.2-compat-findings.md](./docs/dsh-0.2-compat-findings.md)
+for the two upstream defects this fork works around (the removed settings API,
+and the prefix route that leaks on stop and bricks the next mount).
+
 Fork branch `dsh-desktop-0.2`: makes the plugin actually configurable and
 restart-safe on the `0.2.x` runtime, and shortens the rewrite.
 
