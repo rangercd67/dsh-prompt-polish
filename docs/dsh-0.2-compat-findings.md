@@ -4,7 +4,7 @@ Two upstream defects were found while adapting this plugin to the dsh **desktop*
 runtime `0.2.0-rc.2`, plus one harness requirement that silently disables a
 plugin's configuration. Each is recorded here with the code that decides the
 behaviour, how to reproduce it, and what this fork does instead. The fork's
-answers are in [release-0.3.0.md](./release-0.3.0.md); these notes are the part
+answers are in [release-1.0.0.md](./release-1.0.0.md); these notes are the part
 worth reporting upstream, because they are not specific to this plugin.
 
 ## 1. `settings.installSection` no longer exists, and the compat probe hides it

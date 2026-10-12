@@ -6,7 +6,7 @@
 
 **Prompt enhancement for the [DeepSeek Harness](https://github.com/deepseek-ai) web GUI** — one click turns a rough composer draft into a directly usable prompt: goal and deliverable, executable steps where the task needs them, and the constraints the draft itself implies. Your intent is never changed, nothing is fabricated, and the original draft is always preserved.
 
-> **This branch (`dsh-desktop-0.2`) targets the dsh desktop runtime `0.2.0-rc.2`.** It makes the plugin configurable there (volatile `Config` fields + a configuration page shipped in this package), fixes a route leak that could leave the entry `failed` until the host restarted, and ships the concise rewrite as the built-in strategy. See [CHANGELOG.md](./CHANGELOG.md) for the full 0.3.0 entry; `main` still targets `>=0.1.1-rc.2`.
+> **This branch (`dsh-desktop-0.2`) targets the dsh desktop runtime `0.2.0-rc.2`.** It makes the plugin configurable there (volatile `Config` fields + a configuration page shipped in this package), fixes a route leak that could leave the entry `failed` until the host restarted, and ships the concise rewrite as the built-in strategy. See [CHANGELOG.md](./CHANGELOG.md) for the full 1.0.0 entry; `main` still targets `>=0.1.1-rc.2`.
 >
 > **Unofficial fork.** Based on [dsh-prompt-enhance](https://github.com/rongxingda/dsh-prompt-enhance) (Apache-2.0), modified and re-released here; not endorsed by or affiliated with the upstream author or DeepSeek. See [NOTICE](./NOTICE). Publishing your own build: [docs/publishing.md](./docs/publishing.md).
 >
@@ -58,7 +58,7 @@ The plugin is one npm package with two halves, following the dsh plugin conventi
 
 ## Requirements
 
-- `dsh >= 0.1.1-rc.2 < 0.3.0` — the range states what has actually been exercised, not an open-ended promise.
+- `dsh >= 0.2.0-rc.2 < 0.3.0` — the range states what has actually been exercised, not an open-ended promise. (The `< 0.3.0` here is the **harness** version ceiling; this fork's own version line is `1.x`.)
 - Boot-verified on `0.1.1-rc.2`, `0.1.2-alpha.3`, `0.1.7-rc.2`, and `0.2.0-rc.2` (layer mounts, enhance route answers, client bundle builds; on alpha the plugin takes the newer `ctx.settings.installSection` registration path, and on `0.2.0-rc.2` it also passes the runtime's plugin-compatibility gate). The `0.2.0-rc.2` checks include the **dsh desktop application** — the environment this plugin is normally used in. On a `0.2.x` runtime expect some *other* plugins to disappear from the UI: the gate skips any bundle whose `peerDependencies` pin an older `@deepseek-ai/dsh-*` range (observed: `dshmarket`, `dsh-find-plugin`, `dsh-better-sidebar`). The harness has broken two APIs the plugin touches: `@deepseek-ai/dsh-settings` changed its registration entry between the two early lines, and from `0.1.5-rc.3` the settings service became `SettingsForms` (no synchronous `get`) while `dsh-agent-default-model` moved the harness default model behind its own `ctx.agentDefaultModel.currentSelection()` service. The plugin probes all three shapes at runtime and adapts, no configuration needed.
 - The ceiling covers the whole `0.2.x` line (including its prereleases); a `0.3.x` is untested and therefore outside the range. `dsh.engines` is advisory metadata read by the loader and plugin manager — it states support, it does not enforce it.
 - Node `^22.19.0 || >=24.0.0` (for building from source)
@@ -66,7 +66,7 @@ The plugin is one npm package with two halves, following the dsh plugin conventi
 
 | | |
 |---|---|
-| dsh | `>= 0.1.1-rc.2 < 0.3.0` |
+| dsh | `>= 0.2.0-rc.2 < 0.3.0` |
 | Node | `^22.19.0 \|\| >=24.0.0` |
 | Plugin | `0.2.x` |
 

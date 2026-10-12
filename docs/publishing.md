@@ -1,7 +1,7 @@
 # Publishing this fork
 
 Operator checklist for putting this fork on npm under your own name. Reviewed
-against the tree at commit `e3cf5b1` (version `0.3.0`).
+against this tree at version `1.0.0`.
 
 ## Verdict: do not publish as-is
 
@@ -61,7 +61,9 @@ Three things make `npm publish` either impossible or wrong today:
   `cordis.patch.yml`'s row name and `package.json`'s name agree. The row id
   stays `prompt-enhance`.
 - **Peer floor tightened** to `@deepseek-ai/dsh-llm >=0.2.0-rc.2`.
-- **Own version line**: `0.3.0-dsh.1` (change with `npm version`).
+- **Own version line**: `1.0.0` — deliberately *not* a `0.3.x` number, which
+  would read as a continuation of upstream's line (see [release-1.0.0.md](./release-1.0.0.md)).
+  Change it with `npm version`.
 - **`NOTICE` added** (upstream attribution, changed-files list, no-endorsement)
   and the README carries the unofficial-fork disclaimer plus the two
   disclosures below; `NOTICE` is in the published `files` list.
@@ -82,8 +84,8 @@ Three things make `npm publish` either impossible or wrong today:
 - [ ] **Tighten the peer floor**: `"@deepseek-ai/dsh-llm": ">=0.2.0-rc.2"`.
       This fork drops the pre-0.2 settings wiring, so claiming 0.1.x support is
       wrong, and the harness compatibility gate prefers a current floor.
-- [ ] **Pick your own version line.** `0.3.0` invites confusion with upstream
-      releases; use e.g. `0.3.0-dsh02.1` or start at `1.0.0`.
+- [x] **Own version line** — done: the package is on `1.0.0`, its own line
+      (see "Already handled in this tree").
 - [ ] **Apache-2.0 compliance.** Keep `LICENSE`, add a `NOTICE` naming the
       upstream project and author and stating that this is a modified,
       unofficial fork, and keep the change list in `CHANGELOG.md` (already

@@ -1,4 +1,7 @@
-# 0.3.0 — dsh desktop / `0.2.0-rc.2` fork
+# 1.0.0 — dsh desktop / `0.2.0-rc.2` fork
+
+The fork's own first release, based on upstream **0.2.7**; the `1.x` line is
+independent of upstream's numbering.
 
 Branch `dsh-desktop-0.2`. Makes the plugin *configurable* and restart-safe on the
 `0.2.x` runtime, shortens the rewrite, and moves the configuration page into the

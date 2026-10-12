@@ -2,9 +2,13 @@
 
 All notable changes are documented here. Versions follow [npm](https://www.npmjs.com/package/dsh-prompt-enhance); releases from **0.2.3** onward also have a [GitHub Release](https://github.com/rongxingda/dsh-prompt-enhance/releases) page with notes (0.2.0–0.2.2 are tagged but have no Release page — see this file for their notes).
 
-## 0.3.0 — dsh desktop / `0.2.0-rc.2` fork (unreleased)
+## 1.0.0 — dsh desktop / `0.2.0-rc.2` fork (unreleased)
 
-See [docs/release-0.3.0.md](./docs/release-0.3.0.md) for the install, verification
+The fork starts its **own** version line: `1.0.0` is this build's first release, and
+it says nothing about upstream's `0.3.x` — a different line with different contents.
+What this build is based on (upstream `0.2.7`) is stated here and in [NOTICE](./NOTICE).
+
+See [docs/release-1.0.0.md](./docs/release-1.0.0.md) for the install, verification
 and rollback steps, and [docs/dsh-0.2-compat-findings.md](./docs/dsh-0.2-compat-findings.md)
 for the two upstream defects this fork works around (the removed settings API,
 and the prefix route that leaks on stop and bricks the next mount).
