@@ -2,6 +2,50 @@
 
 All notable changes are documented here. Versions follow [npm](https://www.npmjs.com/package/dsh-prompt-enhance); releases from **0.2.3** onward also have a [GitHub Release](https://github.com/rongxingda/dsh-prompt-enhance/releases) page with notes (0.2.0–0.2.2 are tagged but have no Release page — see this file for their notes).
 
+## 0.3.0 — dsh desktop / `0.2.0-rc.2` fork (unreleased)
+
+Fork branch `dsh-desktop-0.2`: makes the plugin actually configurable and
+restart-safe on the `0.2.x` runtime, and shortens the rewrite.
+
+**Configuration now exists.** On `0.2.x` the harness derives a plugin's settings
+namespace from the schema the package exports and keeps only the fields whose
+meta is `volatile` (`volatileForm()` in `@deepseek-ai/dsh-settings`, applied in
+`describe()` and in every write). This plugin marked none, so its entry was
+skipped: no settings page, no plugins-page form, no way to write a value —
+while the `installSection`/`installSettingsSection` wiring it used for that had
+already been removed from the harness, so its compat probe silently did
+nothing. Every `Config` field is now volatile (set through the public
+schemastery's `meta`, because this package depends on the public package rather
+than the harness fork that spells it `.volatile()`), and the dead compat probe
+is gone. The plugin now ships its **own configuration page** — a
+`plugins.row.config` entry for `dsh-prompt-enhance#prompt-enhance` rendered with
+the shared `SettingsForm`/`SettingsFormModel` primitives — so no companion
+package is required to edit it.
+
+**Route lifecycle fixed.** `webserver.register()` returns the disposer that
+removes the route; the plugin dropped it, so `/prompt-enhance` outlived the
+fiber that owned it. The next mount — the plugins page's enable switch, a
+reload, a re-link — then died on `webserver: duplicate prefix route
+"/prompt-enhance"` and left the entry `failed` until the host restarted. The
+disposer is now held in an effect, and the per-context mount guard is cleared
+when it runs.
+
+**Shorter rewrites.** The built-in strategy no longer demands acceptance
+criteria, boundary conditions, and `(待补充：…)` placeholders: structure stays as
+light as the task needs, an unknown detail is simply omitted (or, only when it
+blocks execution, asked as one closing question), and the length target is
+1x–2x. `maxOutputTokens` default rises 2048 → 6000: a Chinese long rewrite is
+already ~1k tokens and reasoning shares the budget, which is what produced
+"重写结果达到输出上限".
+
+**`0.2.x` API adaptations.** The client settings mirror reads `configForms`
+instead of the removed `settingsScope` (which had left it permanently on
+bundled defaults — `enabled: false` never hid the composer button); slot types
+come from `ui-renderer`, `sessionId` from `ui-session`, the row-config slot from
+`ui-plugin-manager`; the enhancement call declares its own `MessageSourceMap`
+kind (`plugin` was removed from the harness vocabulary); `dsh.engines.dsh`
+tightens to `>=0.2.0-rc.2 <0.3.0` and the devDeps pin the 0.2.0-rc.2 client line.
+
 ## 0.2.7 (2026-09-30)
 
 Documentation-only version bump; `src/` and `lib/` are identical to 0.2.6 and the shipped bundles are unchanged.

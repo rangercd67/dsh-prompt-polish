@@ -4,7 +4,9 @@
 [![npm](https://img.shields.io/npm/v/dsh-prompt-enhance)](https://www.npmjs.com/package/dsh-prompt-enhance)
 [![license](https://img.shields.io/badge/license-Apache--2.0-blue)](./LICENSE)
 
-**Prompt enhancement for the [DeepSeek Harness](https://github.com/deepseek-ai) web GUI** — one click turns a rough composer draft into a well-structured prompt: explicit role and goal, executable steps, output format, acceptance criteria, and edge cases. Your intent is never changed, nothing is fabricated, and the original draft is always preserved.
+**Prompt enhancement for the [DeepSeek Harness](https://github.com/deepseek-ai) web GUI** — one click turns a rough composer draft into a directly usable prompt: goal and deliverable, executable steps where the task needs them, and the constraints the draft itself implies. Your intent is never changed, nothing is fabricated, and the original draft is always preserved.
+
+> **This branch (`dsh-desktop-0.2`) targets the dsh desktop runtime `0.2.0-rc.2`.** It makes the plugin configurable there (volatile `Config` fields + a configuration page shipped in this package), fixes a route leak that could leave the entry `failed` until the host restarted, and ships the concise rewrite as the built-in strategy. See [CHANGELOG.md](./CHANGELOG.md) for the full 0.3.0 entry; `main` still targets `>=0.1.1-rc.2`.
 
 English | [简体中文](./README.zh-CN.md)
 
