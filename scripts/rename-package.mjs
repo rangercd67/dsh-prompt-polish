@@ -16,7 +16,7 @@
  * settings namespace, and every existing profile patch targets it.
  *
  * Usage:
- *   node scripts/rename-package.mjs --name @you/dsh-prompt-enhance [--repo <git url>]
+ *   node scripts/rename-package.mjs --name @you/dsh-prompt-polish [--repo <git url>]
  *   node scripts/rename-package.mjs --check
  *
  * `--check` reports whether the three name-bearing places agree, without
@@ -52,7 +52,7 @@ if (argv.includes('--check')) {
 const name = readFlag('--name')
 const repo = readFlag('--repo')
 if (name === undefined || name.trim() === '') {
-  console.error('usage: node scripts/rename-package.mjs --name @scope/dsh-prompt-enhance [--repo <git url>]')
+  console.error('usage: node scripts/rename-package.mjs --name @scope/dsh-prompt-polish [--repo <git url>]')
   process.exit(2)
 }
 

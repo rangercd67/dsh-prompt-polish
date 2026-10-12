@@ -1,12 +1,13 @@
-# 1.0.0 — dsh desktop / `0.2.0-rc.2` fork
+# 1.0.0 — dsh-prompt-polish (derivative of dsh-prompt-enhance 0.2.7)
 
-The fork's own first release, based on upstream **0.2.7**; the `1.x` line is
-independent of upstream's numbering.
+`dsh-prompt-polish`'s own first release, based on upstream
+`dsh-prompt-enhance` **0.2.7**; the `1.x` line is independent of upstream's
+numbering.
 
 Branch `dsh-desktop-0.2`. Makes the plugin *configurable* and restart-safe on the
 `0.2.x` runtime, shortens the rewrite, and moves the configuration page into the
 package itself. The incompatibilities behind these changes are documented in
-[dsh-0.2-compat-findings.md](./dsh-0.2-compat-findings.md).
+[../compat/dsh-0.2-findings.md](../compat/dsh-0.2-findings.md).
 
 ## What changed
 
@@ -30,7 +31,7 @@ so the plugin was not configurable anywhere on `0.2.x`, silently.
 
 ### The plugin ships its own configuration page
 
-A `plugins.row.config` entry keyed `dsh-prompt-enhance#prompt-enhance`, rendered
+A `plugins.row.config` entry keyed `dsh-prompt-polish#prompt-enhance`, rendered
 with the harness' shared `SettingsForm` / `SettingsFormModel` /
 `SettingsValueField` / `Checkbox` primitives: all sixteen fields, zh/en copy,
 override badges, per-field reset, conflict-fenced save, and the
@@ -88,7 +89,7 @@ browser half is served over HTTP with a content revision, so it does reload.
 
 1. `include:prompt-enhance` is `active` (not `failed`);
 2. the client slot ledger has `plugins.row.config` key
-   `dsh-prompt-enhance#prompt-enhance`;
+   `dsh-prompt-polish#prompt-enhance`;
 3. the Plugins page row grows a `›` control and the form reads/writes all
    sixteen fields;
 4. an enhancement returns the concise shape (no placeholders, no acceptance

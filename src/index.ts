@@ -8,7 +8,7 @@
  * Configuration lives in the `Config` schema this package exports: dsh 0.2.x
  * turns a plugin entry into a settings namespace from that schema, provided the
  * fields are marked volatile (see `src/config.ts`).
- * @module dsh-prompt-enhance
+ * @module dsh-prompt-polish
  */
 
 import type { Context } from '@deepseek-ai/cordis'

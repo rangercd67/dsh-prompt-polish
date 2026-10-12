@@ -4,7 +4,7 @@
  * restore of the original draft. It hides itself once the draft diverges
  * from the applied text (the user kept typing) — the entry is dropped, so
  * the bar can never restore stale text over newer edits.
- * @module dsh-prompt-enhance/client/UndoBar
+ * @module dsh-prompt-polish/client/UndoBar
  */
 
 import { useEffect, useSyncExternalStore, type ReactNode } from 'react'

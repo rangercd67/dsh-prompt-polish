@@ -1,17 +1,31 @@
 # Changelog
 
-All notable changes are documented here. Versions follow [npm](https://www.npmjs.com/package/dsh-prompt-enhance); releases from **0.2.3** onward also have a [GitHub Release](https://github.com/rongxingda/dsh-prompt-enhance/releases) page with notes (0.2.0–0.2.2 are tagged but have no Release page — see this file for their notes).
+All notable changes are documented here.
 
-## 1.0.0 — dsh desktop / `0.2.0-rc.2` fork (unreleased)
+`dsh-prompt-polish` is a modified, unofficial derivative of
+[dsh-prompt-enhance](https://github.com/rongxingda/dsh-prompt-enhance)
+(Apache-2.0, upstream author rongxingda); upstream **0.2.7** is the base of this
+project's `1.0.0`. Everything **above** the `1.0.0` entry is upstream's own
+history — for the upstream project, versions follow
+[npm](https://www.npmjs.com/package/dsh-prompt-enhance) and releases from
+**0.2.3** onward have a
+[GitHub Release](https://github.com/rongxingda/dsh-prompt-enhance/releases) page
+with notes (0.2.0–0.2.2 are tagged but have no Release page). Entries at and
+below `0.2.7` describe upstream's code, not this fork's.
 
-The fork starts its **own** version line: `1.0.0` is this build's first release, and
-it says nothing about upstream's `0.3.x` — a different line with different contents.
-What this build is based on (upstream `0.2.7`) is stated here and in [NOTICE](./NOTICE).
+## 1.0.0 — dsh-prompt-polish (derivative of dsh-prompt-enhance 0.2.7)
 
-See [docs/release-1.0.0.md](./docs/release-1.0.0.md) for the install, verification
-and rollback steps, and [docs/dsh-0.2-compat-findings.md](./docs/dsh-0.2-compat-findings.md)
-for the two upstream defects this fork works around (the removed settings API,
-and the prefix route that leaks on stop and bricks the next mount).
+The first release of **`dsh-prompt-polish`**, a fork of `dsh-prompt-enhance`
+0.2.7. It starts its **own** version line: `1.0.0` is this project's first
+release and says nothing about upstream's `0.3.x`, a different line with
+different contents. What this build is based on is stated here and in
+[NOTICE](./NOTICE), and the differences are tabulated in both READMEs.
+
+See [docs/history/release-1.0.0.md](./docs/history/release-1.0.0.md) for the
+install, verification and rollback steps, and
+[docs/compat/dsh-0.2-findings.md](./docs/compat/dsh-0.2-findings.md) for the two
+upstream defects this fork works around (the removed settings API, and the
+prefix route that leaks on stop and bricks the next mount).
 
 Fork branch `dsh-desktop-0.2`: makes the plugin actually configurable and
 restart-safe on the `0.2.x` runtime, and shortens the rewrite.
@@ -27,7 +41,7 @@ nothing. Every `Config` field is now volatile (set through the public
 schemastery's `meta`, because this package depends on the public package rather
 than the harness fork that spells it `.volatile()`), and the dead compat probe
 is gone. The plugin now ships its **own configuration page** — a
-`plugins.row.config` entry for `dsh-prompt-enhance#prompt-enhance` rendered with
+`plugins.row.config` entry for `dsh-prompt-polish#prompt-enhance` rendered with
 the shared `SettingsForm`/`SettingsFormModel` primitives — so no companion
 package is required to edit it.
 

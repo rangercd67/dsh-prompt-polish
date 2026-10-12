@@ -2,7 +2,7 @@
  * Wire contract shared by the host route and the browser half: one enhance
  * POST and its typed responses. Pure types and constants only, safe to
  * bundle into both halves.
- * @module dsh-prompt-enhance/shared/protocol
+ * @module dsh-prompt-polish/shared/protocol
  */
 
 /** Host route path the browser half POSTs the draft to. */

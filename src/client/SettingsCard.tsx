@@ -14,7 +14,7 @@
  * gets conflict detection, the override/reset semantics, and the
  * unavailable/read-only states for free. Reading the mirrored value live is
  * what makes {@link import('./settings').setClientSettings} follow a save.
- * @module dsh-prompt-enhance/client/SettingsCard
+ * @module dsh-prompt-polish/client/SettingsCard
  */
 
 import { useSyncExternalStore, type ReactNode } from 'react'
@@ -48,7 +48,7 @@ type LocaleKey = Parameters<TranslateNS<'prompt-enhance'>>[0]
 declare const __PROMPT_ENHANCE_PACKAGE_NAME__: string
 const PACKAGE_NAME = typeof __PROMPT_ENHANCE_PACKAGE_NAME__ === 'string'
   ? __PROMPT_ENHANCE_PACKAGE_NAME__
-  : 'dsh-prompt-enhance'
+  : 'dsh-prompt-polish'
 
 /**
  * `plugins.row.config` key of the row this page configures: the bundle whose

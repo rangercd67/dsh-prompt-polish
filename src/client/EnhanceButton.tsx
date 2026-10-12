@@ -6,7 +6,7 @@
  * result remembers the original on the undo stack before setDraft, so one
  * click restores it. The button never blocks the composer: on any failure
  * the draft stays exactly as the user typed it.
- * @module dsh-prompt-enhance/client/EnhanceButton
+ * @module dsh-prompt-polish/client/EnhanceButton
  */
 
 import { useCallback, useEffect, useRef, useSyncExternalStore, type ReactNode } from 'react'

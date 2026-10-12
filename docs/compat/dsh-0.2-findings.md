@@ -3,9 +3,13 @@
 Two upstream defects were found while adapting this plugin to the dsh **desktop**
 runtime `0.2.0-rc.2`, plus one harness requirement that silently disables a
 plugin's configuration. Each is recorded here with the code that decides the
-behaviour, how to reproduce it, and what this fork does instead. The fork's
-answers are in [release-1.0.0.md](./release-1.0.0.md); these notes are the part
-worth reporting upstream, because they are not specific to this plugin.
+behaviour, how to reproduce it, and what **`dsh-prompt-polish`** — the fork —
+does instead. "This plugin" below means `dsh-prompt-polish`; the defects are in
+**upstream `dsh-prompt-enhance` 0.2.7**, the base of this project's `1.0.0`.
+
+The fork's answers are summarised in
+[../history/release-1.0.0.md](../history/release-1.0.0.md); these notes are the
+part worth reporting upstream, because they are not specific to this plugin.
 
 ## 1. `settings.installSection` no longer exists, and the compat probe hides it
 
@@ -129,5 +133,7 @@ Not a defect, but the missing half of the same story: the Plugins page draws a
 row's configure control only while something registers
 `plugins.row.config` keyed `<package name>#<row id>`
 (`ui-plugin-manager/lib/client.js`: `configure.has(row) → ledger.rows.has(...)`).
-A row with no registration has no page, whatever the host serves. The fork
-registers its own key from its client half, so no companion package is needed.
+A row with no registration has no page, whatever the host serves. `dsh-prompt-polish`
+registers its own key — `<package name>#prompt-enhance`, today
+`dsh-prompt-polish#prompt-enhance` — from its client half, so no companion package
+is needed.

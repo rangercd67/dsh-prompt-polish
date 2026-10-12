@@ -4,7 +4,7 @@
  * so this module re-declares the three fields the UI reads, with the same
  * defaults, and re-exports them as a subscribable store fed by the bound
  * settings scope.
- * @module dsh-prompt-enhance/client/settings
+ * @module dsh-prompt-polish/client/settings
  */
 
 /** The settings subset the browser UI consumes (mirror of the host defaults). */

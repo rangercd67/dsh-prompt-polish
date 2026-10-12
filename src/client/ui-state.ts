@@ -5,7 +5,7 @@
  * keyboard shortcut can find the composer the user is working in. Every
  * mutation notifies the external-store subscribers the React components
  * read through.
- * @module dsh-prompt-enhance/client/ui-state
+ * @module dsh-prompt-polish/client/ui-state
  */
 
 import type { EnhanceError, EnhanceResult } from '../shared/protocol'

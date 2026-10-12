@@ -5,7 +5,7 @@
  * `settings.` so they cannot collide with the composer copy. Keeping the field
  * order here means the page renders the schema in a deliberate order instead of
  * whatever key order the schema happens to have.
- * @module dsh-prompt-enhance/client/settings-copy
+ * @module dsh-prompt-polish/client/settings-copy
  */
 
 /** How one field is staged and rendered. */

@@ -6,7 +6,7 @@
  * describe-image family: every optional wiring failure is caught and
  * logged-never-thrown, because the web shell fails the whole boot when a
  * plugin apply throws.
- * @module dsh-prompt-enhance/client
+ * @module dsh-prompt-polish/client
  */
 
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
@@ -54,7 +54,7 @@ export function apply(ctx: ClientContext): void {
       } catch {
         return () => {}
       }
-    }, 'dsh-prompt-enhance: dictionaries')
+    }, 'dsh-prompt-polish: dictionaries')
   })
 
   // Baseline before anything optional mounts: the bundled mirror equals the
@@ -74,7 +74,7 @@ export function apply(ctx: ClientContext): void {
       setClientSettings(decodeClientSettings(scope.getSnapshot().value))
     }
     sync()
-    ctx.effect(() => scope.subscribe(sync), 'dsh-prompt-enhance: settings mirror')
+    ctx.effect(() => scope.subscribe(sync), 'dsh-prompt-polish: settings mirror')
   })
 
   ctx.inject(['slots'], (slotsCtx: ClientContext) => {
@@ -112,7 +112,7 @@ export function apply(ctx: ClientContext): void {
   // the host serves because `Config` marks its fields volatile.
   ctx.inject(['configForms', 'slots'], (pageCtx: ClientContext) => {
     const model = new SettingsCardModel(pageCtx.configForms.get(SETTINGS_NAMESPACE))
-    ctx.effect(() => () => model.dispose(), 'dsh-prompt-enhance: settings form model')
+    ctx.effect(() => () => model.dispose(), 'dsh-prompt-polish: settings form model')
     ctx.effect(() => pageCtx.slots.inject('plugins.row.config', () => {
       try {
         return pageCtx.slots.register(
@@ -127,7 +127,7 @@ export function apply(ctx: ClientContext): void {
       } catch {
         return () => {}
       }
-    }), 'dsh-prompt-enhance: settings page')
+    }), 'dsh-prompt-polish: settings page')
   })
 
   // The configurable shortcut: acts on the composer the user is working in;
@@ -145,5 +145,5 @@ export function apply(ctx: ClientContext): void {
     }
     document.addEventListener('keydown', onKeyDown, true)
     return () => document.removeEventListener('keydown', onKeyDown, true)
-  }, 'dsh-prompt-enhance: shortcut')
+  }, 'dsh-prompt-polish: shortcut')
 }

@@ -4,7 +4,7 @@
  * plane (copyable, never entering model history). Enhancing the composer
  * draft itself stays a client-side concern (button / shortcut), because the
  * draft lives in the browser.
- * @module dsh-prompt-enhance/enhance-command
+ * @module dsh-prompt-polish/enhance-command
  */
 
 import type { Context } from '@deepseek-ai/cordis'

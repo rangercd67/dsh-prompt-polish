@@ -3,7 +3,7 @@
  * enhanced result, with 回填 / 复制 / 取消 in the result phase, a cancellable
  * spinner in the loading phase, and a retryable error message otherwise.
  * Rendered through a portal into document.body by the button component.
- * @module dsh-prompt-enhance/client/ResultPanel
+ * @module dsh-prompt-polish/client/ResultPanel
  */
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'

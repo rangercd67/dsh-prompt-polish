@@ -1,5 +1,7 @@
 # dsh-prompt-enhance 代码审阅报告
 
+> **上游历史文档,保留原文。** 本文是上游项目 **`dsh-prompt-enhance` 0.2.2** 的代码审阅报告(作者 rongxingda),不是 `dsh-prompt-polish` 的报告:文中的目录结构、用例数(20 文件 / 207 用例)与条目数量都描述上游当时的状态。本分支(`dsh-prompt-polish` 1.0.0,基于上游 0.2.7)的差异见 [../../README.zh-CN.md](../../README.zh-CN.md) 与 [../compat/dsh-0.2-findings.md](../compat/dsh-0.2-findings.md)。原文未作改动。
+
 审阅对象：`dsh-prompt-enhance@0.2.2`（单包双半的 DSH Web GUI 提示词增强插件）
 审阅方式：全量静态阅读 + 依赖契约逐项比对 + 真实 `tsc`/`vitest`/`esbuild` 验证 + **GUI 实机冒烟**
 最终状态：typecheck 通过、**20 文件 / 207 用例全绿**、`lib/` 产物与 `src/` 一致、**插件在真实 `dsh web` 中加载并可用**

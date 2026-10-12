@@ -2,7 +2,7 @@
  * The `prompt-enhance` client locale namespace: zh (key-set source of truth)
  * and en dictionaries for the composer button, preview panel, undo bar, and
  * the plugin's configuration page.
- * @module dsh-prompt-enhance/client/locales
+ * @module dsh-prompt-polish/client/locales
  */
 
 import { settingsEn, settingsZh } from './settings-copy'

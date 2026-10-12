@@ -3,7 +3,7 @@
  * the dsh-session-title-llm contract: paired route resolution, framed user
  * prompt, composed deadline + caller cancellation rechecked during and
  * after the stream, terminal-finish validation, output normalization.
- * @module dsh-prompt-enhance/enhancer
+ * @module dsh-prompt-polish/enhancer
  */
 
 import { BlockAssembler, createUserMessage } from '@deepseek-ai/dsh-llm'

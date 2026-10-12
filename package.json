@@ -1,6 +1,6 @@
 {
-  "name": "dsh-prompt-enhance-dsh02",
-  "description": "Prompt enhancement for the dsh web GUI: rewrite the composer draft into a well-structured prompt through the harness LLM service, preview the before/after, then fill back, copy, or undo. Original draft is always preserved.",
+  "name": "dsh-prompt-polish",
+  "description": "Prompt polishing for the dsh web GUI, a derivative of dsh-prompt-enhance: rewrite the composer draft into a directly usable prompt through the harness LLM service, preview the before/after, then fill back, copy, or undo. Original draft is always preserved.",
   "version": "1.0.0",
   "type": "module",
   "engines": {
@@ -93,17 +93,20 @@
     "deepseek-harness",
     "dsh",
     "dsh-plugin",
+    "dsh-prompt-polish",
     "prompt",
-    "prompt-enhancement"
+    "prompt-enhancement",
+    "prompt-polish",
+    "prompt-rewrite"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/rangercd67/dsh-prompt-enhance-dsh02.git"
+    "url": "https://github.com/rangercd67/dsh-prompt-polish.git"
   },
   "bugs": {
-    "url": "https://github.com/rangercd67/dsh-prompt-enhance-dsh02/issues"
+    "url": "https://github.com/rangercd67/dsh-prompt-polish/issues"
   },
-  "homepage": "https://github.com/rangercd67/dsh-prompt-enhance-dsh02#readme",
+  "homepage": "https://github.com/rangercd67/dsh-prompt-polish#readme",
   "scripts": {
     "build": "tsc -p . && node scripts/build.mjs",
     "watch": "node scripts/build.mjs --watch",

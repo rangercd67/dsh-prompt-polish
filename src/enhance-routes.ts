@@ -3,7 +3,7 @@
  * seam. Loopback-fenced, body-capped, per-request config re-read (settings
  * changes land on the very next call), route resolved by precedence
  * (settings pair → session request header → harness default model).
- * @module dsh-prompt-enhance/enhance-routes
+ * @module dsh-prompt-polish/enhance-routes
  */
 
 import type { IncomingMessage, ServerResponse } from 'node:http'

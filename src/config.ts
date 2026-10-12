@@ -2,7 +2,7 @@
  * Plugin configuration: one schemastery schema rendered automatically by
  * Settings → 插件配置, plus pure resolution/validation shared by the host
  * route, the slash command, and (mirrored defaults) the browser half.
- * @module dsh-prompt-enhance/config
+ * @module dsh-prompt-polish/config
  */
 
 import z from 'schemastery'
