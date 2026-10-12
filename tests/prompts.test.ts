@@ -25,8 +25,18 @@ describe('DEFAULT_SYSTEM_PROMPT', () => {
     expect(DEFAULT_SYSTEM_PROMPT).toContain('literal data')
   })
 
-  it('carries the no-fabrication and language-mirroring rules', () => {
-    expect(DEFAULT_SYSTEM_PROMPT).toContain('Never fabricate')
+  it('carries the no-fabrication, no-placeholder, and language-mirroring rules', () => {
+    expect(DEFAULT_SYSTEM_PROMPT).toContain('Never add requirements')
     expect(DEFAULT_SYSTEM_PROMPT).toContain('SAME language')
+    // The concise default is deliberately placeholder-free: inventing a value
+    // is forbidden, and interrogating the user instead of rewriting is not the
+    // editor's job either (it is what made rewrites long and unusable).
+    expect(DEFAULT_SYSTEM_PROMPT).toContain('do NOT insert placeholders')
+  })
+
+  it('keeps the structure light instead of mandating sections', () => {
+    expect(DEFAULT_SYSTEM_PROMPT).toContain('Do not add acceptance criteria')
+    expect(DEFAULT_SYSTEM_PROMPT).not.toContain('Acceptance criteria: state how')
+    expect(DEFAULT_SYSTEM_PROMPT).toContain('roughly 1x to 2x')
   })
 })

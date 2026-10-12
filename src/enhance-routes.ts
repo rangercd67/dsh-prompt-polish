@@ -241,18 +241,30 @@ async function serveEnhance(ctx: Context, readConfig: () => Config, gate: Admiss
 }
 
 /**
- * Contexts that already own the route. The admission gate is created per
- * registration, so mounting twice on one context would silently double the
- * effective limits — exactly the drift a re-applied plugin (reload, re-link)
- * must not introduce. Re-applying reuses the first mount instead.
+ * Contexts that currently own the route. The admission gate is created per
+ * registration, so mounting twice on one live context would silently double
+ * the effective limits — exactly the drift a re-applied plugin must not
+ * introduce, and (on the real webserver) a duplicate-prefix throw.
+ *
+ * The entry is cleared again when the registration is disposed, so a context
+ * that is reused after a reload registers afresh instead of silently keeping a
+ * dead route.
  */
 const mountedContexts = new WeakSet<Context>()
 
 /**
  * Register the /prompt-enhance prefix route on the shared webserver. Absent
  * webserver (non-web composition) is a silent no-op, matching the
- * describe-image family pattern. A second registration on the same context is
+ * describe-image family pattern. A second registration on a live context is
  * ignored.
+ *
+ * The webserver returns the disposer that removes the route again, and holding
+ * it in an effect is what releases the prefix when this fiber stops. Dropping
+ * that disposer — as this plugin used to — leaked `/prompt-enhance` into the
+ * webserver's registry for the rest of the process: the next mount (a plugin
+ * page enable toggle, a reload, a re-link) then died on
+ * `webserver: duplicate prefix route "/prompt-enhance"`, leaving the entry
+ * failed with no way back short of restarting the host.
  * @param ctx - registrant context; webServer is required.
  * @param readConfig - per-request config reader so settings changes apply immediately.
  */
@@ -262,12 +274,18 @@ export function registerEnhanceRoute(ctx: Context, readConfig: () => Config): vo
   if (mountedContexts.has(ctx)) return
   mountedContexts.add(ctx)
   const gate: AdmissionGate = { stamps: [], active: 0 }
-  webserver.register({
-    kind: 'prefix',
-    path: ENHANCE_PREFIX,
-    handler: (req: IncomingMessage, res: ServerResponse): Promise<void> => {
-      const pathname = new URL(req.url ?? '/', 'http://x').pathname
-      return serveEnhance(ctx, readConfig, gate, pathname, req, res, pathname === ENHANCE_STREAM_ENDPOINT)
-    },
-  })
+  ctx.effect(() => {
+    const dispose = webserver.register({
+      kind: 'prefix',
+      path: ENHANCE_PREFIX,
+      handler: (req: IncomingMessage, res: ServerResponse): Promise<void> => {
+        const pathname = new URL(req.url ?? '/', 'http://x').pathname
+        return serveEnhance(ctx, readConfig, gate, pathname, req, res, pathname === ENHANCE_STREAM_ENDPOINT)
+      },
+    })
+    return () => {
+      mountedContexts.delete(ctx)
+      dispose()
+    }
+  }, 'prompt-enhance: /enhance route')
 }

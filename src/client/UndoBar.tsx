@@ -10,6 +10,7 @@
 import { useEffect, useSyncExternalStore, type ReactNode } from 'react'
 import type { PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type {} from '@deepseek-ai/dsh-client-ui-session/client'
 import * as ui from './ui-state'
 import { useSessionKey } from './session-key'
 

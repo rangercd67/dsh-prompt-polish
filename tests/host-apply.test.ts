@@ -1,94 +1,109 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { apply } from '../src/index'
-import { PROMPT_ENHANCE_NAMESPACE } from '../src/config'
+import { Config } from '../src/config'
 
 /**
- * `apply()` must register its settings section on both harness generations,
- * because `@deepseek-ai/dsh-settings` moved the wiring between them:
- * rc exports standalone helpers; alpha (0.1.2-alpha.x) exposes the same
- * wiring as `ctx.settings.installSection()` and dropped the standalone names.
- * A static named import of those names is a load-time SyntaxError on alpha,
- * which is what these cases guard.
+ * The host half's contract on dsh 0.2.x:
+ *
+ * - the exported `Config` schema carries volatile fields, because that is what
+ *   makes the loader serve the entry as a settings namespace at all
+ *   (`volatileForm()` in `@deepseek-ai/dsh-settings`);
+ * - `apply()` registers the enhance route through an effect that disposes it,
+ *   so stopping the fiber releases the prefix instead of leaking it (the leak
+ *   that used to make a re-mount die on `duplicate prefix route`);
+ * - nothing probes the `settings` service any more: `installSection` and the
+ *   standalone helpers it used for that were removed from the harness.
  */
-vi.mock('@deepseek-ai/dsh-settings', () => ({
-  installSettingsSection: vi.fn(),
-  settingsNamespace: (ns: string) => ns,
-}))
 
-interface StubContext {
-  get: (name: string) => unknown
-  inject: (deps: string[], cb: (ctx: unknown) => void) => void
-  effect?: (fn: () => () => void) => void
+interface Stub {
+  ctx: Record<string, unknown>
+  effects: Array<() => void>
 }
 
-/** Minimal registrant context: optional services all answer `undefined`. */
-function stubContext(settingsService: unknown, present = true): StubContext {
+/** Minimal registrant context: named services answered from `overrides`. */
+function stubContext(overrides: Record<string, unknown> = {}): Stub {
+  const effects: Array<() => void> = []
   return {
-    get: () => undefined,
-    inject: (deps: string[], cb: (ctx: unknown) => void) => {
-      if (present && deps.includes('settings')) cb({ settings: settingsService })
+    effects,
+    ctx: {
+      get: (name: string) => overrides[name],
+      inject: () => {},
+      effect: (fn: () => unknown) => {
+        const dispose = fn()
+        if (typeof dispose === 'function') effects.push(dispose as () => void)
+        return () => {}
+      },
     },
-    effect: () => {},
   }
 }
 
-async function legacyModule(): Promise<{ installSettingsSection: ReturnType<typeof vi.fn> }> {
-  return (await import('@deepseek-ai/dsh-settings')) as unknown as {
-    installSettingsSection: ReturnType<typeof vi.fn>
-  }
-}
+describe('apply settings integration', () => {
+  it('marks every Config field volatile so dsh 0.2.x serves the namespace', () => {
+    const fields = Object.entries(Config.dict ?? {})
+    expect(fields.length).toBeGreaterThan(0)
+    for (const [name, field] of fields) {
+      expect((field.meta as unknown as { volatile?: boolean }).volatile, `${name} must be volatile`).toBe(true)
+    }
+  })
 
-beforeEach(async () => {
-  vi.clearAllMocks()
+  it('never touches the settings service (the 0.2.x API has no install entry point)', () => {
+    const installSection = vi.fn()
+    const { ctx } = stubContext({ settings: { installSection } })
+    apply(ctx as never)
+    expect(installSection).not.toHaveBeenCalled()
+  })
 })
 
-describe('apply settings registration across harness generations', () => {
-  it('uses ctx.settings.installSection when the service speaks the alpha API', () => {
-    const installSection = vi.fn()
-    const ctx = stubContext({ installSection })
+describe('enhance route registration', () => {
+  it('registers the prefix route and keeps its disposer in an effect', () => {
+    const dispose = vi.fn()
+    const register = vi.fn((_route: { kind: string; path: string }) => dispose)
+    const { ctx, effects } = stubContext({ webServer: { register } })
 
     apply(ctx as never)
 
-    expect(installSection).toHaveBeenCalledTimes(1)
-    const call = installSection.mock.calls[0] ?? []
-    expect(call[1]).toBe(PROMPT_ENHANCE_NAMESPACE)
-    // namespace arrives as a plain string — the alpha service validates the
-    // lowercase-hyphen grammar itself and no longer takes a branded wrapper.
-    expect(typeof call[1]).toBe('string')
+    expect(register).toHaveBeenCalledTimes(1)
+    const [route] = register.mock.calls[0] ?? []
+    expect(route).toMatchObject({ kind: 'prefix', path: '/prompt-enhance' })
+    expect(effects).toHaveLength(1)
+    effects[0]?.()
+    expect(dispose).toHaveBeenCalledTimes(1)
   })
 
-  it('falls back to the standalone helpers when the service predates installSection', async () => {
-    const legacy = await legacyModule()
-    const ctx = stubContext({}) // rc-style service: no installSection
+  it('ignores a second mount on the same live context', () => {
+    const register = vi.fn(() => vi.fn())
+    const { ctx } = stubContext({ webServer: { register } })
 
     apply(ctx as never)
-    await vi.waitFor(() => expect(legacy.installSettingsSection).toHaveBeenCalledTimes(1))
+    apply(ctx as never)
 
-    const call = legacy.installSettingsSection.mock.calls[0] ?? []
-    expect(call[1]).toBe(PROMPT_ENHANCE_NAMESPACE)
+    expect(register).toHaveBeenCalledTimes(1)
   })
 
-  it('registers nothing and still applies when no settings service ever mounts', async () => {
-    const legacy = await legacyModule()
-    const ctx = stubContext(undefined, false) // inject callback never fires
+  it('re-registers once the previous mount was disposed', () => {
+    const register = vi.fn(() => vi.fn())
+    const { ctx, effects } = stubContext({ webServer: { register } })
 
+    apply(ctx as never)
+    effects[0]?.()
+    apply(ctx as never)
+
+    expect(register).toHaveBeenCalledTimes(2)
+  })
+
+  it('is a silent no-op without a webserver', () => {
+    const { ctx, effects } = stubContext()
     expect(() => apply(ctx as never)).not.toThrow()
-    await Promise.resolve()
-    expect(legacy.installSettingsSection).not.toHaveBeenCalled()
+    expect(effects).toHaveLength(0)
   })
 })
 
 describe('lib/index.js load-time surface', () => {
-  it('never statically imports the settings helpers removed in alpha', async () => {
+  it('no longer references the settings helpers removed from the harness', async () => {
     const { readFile } = await import('node:fs/promises')
     const { fileURLToPath } = await import('node:url')
     const path = fileURLToPath(new URL('../lib/index.js', import.meta.url))
     const source = await readFile(path, 'utf8')
-    // A static named import of a removed export is a SyntaxError at module
-    // evaluation, before any runtime probe could run — the dynamic import
-    // below is the only allowed way to reach those names.
-    expect(source).not.toMatch(/import\s*\{[^}]*installSettingsSection/)
-    expect(source).not.toMatch(/import\s*\{[^}]*settingsNamespace/)
-    expect(source).toMatch(/import\("@deepseek-ai\/dsh-settings"\)/)
+    expect(source).not.toMatch(/installSettingsSection|settingsNamespace/)
   })
 })

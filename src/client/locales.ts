@@ -1,8 +1,11 @@
 /**
  * The `prompt-enhance` client locale namespace: zh (key-set source of truth)
- * and en dictionaries for the composer button, preview panel, and undo bar.
+ * and en dictionaries for the composer button, preview panel, undo bar, and
+ * the plugin's configuration page.
  * @module dsh-prompt-enhance/client/locales
  */
+
+import { settingsEn, settingsZh } from './settings-copy'
 
 /** Simplified Chinese dictionary (the key-set source of truth). */
 export const zh = {
@@ -49,6 +52,9 @@ export const zh = {
   'error.upstream.contextWindow': '输入超出模型上下文窗口，请精简原文或更换模型。',
   'error.upstream.toolCall': '模型请求了工具调用，提示词增强只需要纯文本；请更换模型后重试。',
   'error.upstream.maxTokens': '重写结果达到输出上限（maxOutputTokens），请在设置中调大上限或精简原文后重试。',
+  // The configuration page's own copy (see ./settings-copy.ts), kept in the
+  // same namespace so the page and the composer share one `t`.
+  ...settingsZh,
 } as const
 
 /** Dictionary key union. */
@@ -99,6 +105,7 @@ export const en: Record<PromptEnhanceKey, string> = {
   'error.upstream.contextWindow': 'The input exceeds the model context window — shorten it or switch models.',
   'error.upstream.toolCall': 'The model requested tool calls, but prompt enhance needs plain text — switch models and retry.',
   'error.upstream.maxTokens': 'The rewrite hit the output cap (maxOutputTokens) — raise it in settings or shorten the draft.',
+  ...settingsEn,
 }
 
 /** Both shipped dictionaries, keyed by locale id. */

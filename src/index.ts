@@ -1,15 +1,18 @@
 /**
- * Host half of the prompt-enhance plugin: the `prompt-enhance` settings
- * section, the POST /prompt-enhance/enhance route (LLM call through
- * ctx.llm, route resolved by precedence: settings pair → session request
- * header → harness default model), and the /enhance slash command. The
- * browser half (exports "./client") contributes the composer button, the
- * preview panel, and the undo bar.
+ * Host half of the prompt-enhance plugin: the POST /prompt-enhance/enhance
+ * route (LLM call through ctx.llm, route resolved by precedence: settings pair
+ * → session request header → harness default model) and the /enhance slash
+ * command. The browser half (exports "./client") contributes the composer
+ * button, the preview panel, the undo bar, and the plugin's configuration page.
+ *
+ * Configuration lives in the `Config` schema this package exports: dsh 0.2.x
+ * turns a plugin entry into a settings namespace from that schema, provided the
+ * fields are marked volatile (see `src/config.ts`).
  * @module dsh-prompt-enhance
  */
 
 import type { Context } from '@deepseek-ai/cordis'
-import { Config, DEFAULT_CONFIG, PROMPT_ENHANCE_NAMESPACE, resolveConfig, type Config as PluginConfig } from './config'
+import { DEFAULT_CONFIG, resolveConfig, type Config as PluginConfig } from './config'
 import { registerEnhanceRoute } from './enhance-routes'
 import { registerEnhanceCommand } from './enhance-command'
 
@@ -27,54 +30,7 @@ export { ENHANCE_ENDPOINT } from './shared/protocol'
 export type { EnhanceError, EnhanceResult, EnhanceRequestBody, EnhanceResponse, EnhanceErrorCode } from './shared/protocol'
 
 /**
- * Register the settings section across harness generations.
- *
- * `@deepseek-ai/dsh-settings` changed its public surface between the 0.1.1-rc
- * line and the 0.1.2-alpha line:
- * - rc (0.1.1-rc.x): standalone `installSettingsSection(ctx, ns, …)` plus the
- *   `settingsNamespace()` brand helper — both module exports;
- * - alpha (0.1.2-alpha.x): the same wiring moved onto the service as
- *   `ctx.settings.installSection(owner, ns, …)`, and the standalone exports
- *   were removed.
- *
- * A static named import of the removed exports is a load-time SyntaxError on
- * alpha, so this file must not statically import them. Instead the section is
- * registered through `ctx.inject(['settings'])` — the service-availability
- * gate both generations use internally — with a runtime probe picking the API
- * the mounted service actually speaks. The legacy path goes through a dynamic
- * import so the alpha build never evaluates the removed names.
- */
-function installSettingsSectionCompat(ctx: Context, namespace: string, schema: unknown, entry: unknown, hooks: {
-  setSource: (source: () => unknown) => void
-  onChange: () => void
-  validate: (value: unknown) => void
-}): void {
-  ctx.inject(['settings'], (settingsCtx: Context) => {
-    const service = (settingsCtx as unknown as { settings?: { installSection?: unknown } }).settings
-    if (typeof service?.installSection === 'function') {
-      ;(service.installSection as (owner: Context, ns: string, schema: unknown, entry: unknown, hooks: unknown) => void)(
-        ctx, namespace, schema, entry, hooks,
-      )
-      return
-    }
-    // Legacy rc line: resolve the standalone helpers lazily. The module itself
-    // exists in both cohorts; only its named exports differ. Types come from
-    // the rc devDependency — on alpha the runtime probe simply never calls it.
-    void import('@deepseek-ai/dsh-settings').then((mod) => {
-      if (typeof mod.installSettingsSection === 'function') {
-        mod.installSettingsSection(ctx, mod.settingsNamespace(namespace), schema as never, entry, hooks as never)
-      }
-    }, () => {
-      // Settings integration is optional by design; the plugin keeps working
-      // on its composition entry when the module cannot be resolved at all.
-    })
-  })
-}
-
-/**
- * Mount the host half. The settings section layers over the composition
- * entry and is re-resolved per request, so Settings → 插件配置 changes reach
- * the very next call.
+ * Mount the host half.
  *
  * Besides the declared `inject` services (llm, webServer — both required),
  * the host half optionally reads three more through `ctx.get` with
@@ -86,20 +42,14 @@ function installSettingsSectionCompat(ctx: Context, namespace: string, schema: u
  * @param config - deployment configuration (schema defaults filled by the loader).
  */
 export function apply(ctx: Context, config: PluginConfig = { ...DEFAULT_CONFIG }): void {
-  let current: () => PluginConfig = () => config
-  installSettingsSectionCompat(ctx, PROMPT_ENHANCE_NAMESPACE, Config, config, {
-    setSource: (source) => {
-      current = source as () => PluginConfig
-    },
-    onChange: () => {},
-    validate: (value) => {
-      resolveConfig(value as PluginConfig)
-    },
-  })
-  // Run the raw settings through resolveConfig so the request path sees the
-  // normalized form (trimmed provider/model, stripped legacy keys, validated
-  // ranges) — the validate hook only refuses bad values, it never transforms.
-  const readConfig = (): PluginConfig => resolveConfig(current())
+  // `config` is a live reference, not a snapshot: a settings write only touches
+  // `Config` fields marked volatile, so the loader commits the new values into
+  // this same object (`_commitVolatile`) instead of remounting the fiber.
+  // Re-reading it per request is therefore what makes a saved change reach the
+  // very next call. The pre-0.2 `settings.installSection` wiring this plugin
+  // used for that purpose no longer exists in the harness, and nothing has to
+  // replace it.
+  const readConfig = (): PluginConfig => resolveConfig(config)
   registerEnhanceRoute(ctx, readConfig)
   registerEnhanceCommand(ctx, readConfig)
 }

@@ -68,7 +68,7 @@ export interface Config {
 export const DEFAULT_CONFIG: Config = {
   enabled: true,
   temperature: 0.3,
-  maxOutputTokens: 2048,
+  maxOutputTokens: 6000,
   maxInputChars: 12000,
   timeoutMs: 60000,
   systemPrompt: '',
@@ -82,8 +82,17 @@ export const DEFAULT_CONFIG: Config = {
   contextMaxChars: 4000,
 }
 
-/** The settings section schema (rendered by the built-in plugin config page). */
-export const Config: z<Config> = z.object({
+/**
+ * The settings section schema.
+ *
+ * dsh's schemastery fork augments the public module's types (its `.volatile()`
+ * returns `Volatile<…>`-widened outputs), so a schema built with the public
+ * runtime no longer structurally matches the `z<Config>` annotation once that
+ * fork is in the program. The assertion keeps the annotation's value — every
+ * consumer still sees the exact `Config` shape — without pretending the two
+ * type lines agree.
+ */
+export const Config = z.object({
   enabled: z.boolean().default(DEFAULT_CONFIG.enabled).description('总开关：关闭后隐藏输入框增强按钮并停用所有触发方式'),
   provider: z.string().description('覆盖模型路由的 provider（与「模型」必须成对填写；留空跟随当前会话模型）'),
   model: z.string().description('覆盖模型路由的 model（与「provider」必须成对填写；留空跟随当前会话模型）'),
@@ -101,6 +110,28 @@ export const Config: z<Config> = z.object({
   contextMaxMessages: z.number().step(1).min(0).max(50).default(DEFAULT_CONFIG.contextMaxMessages).description('上下文窗口（条数）：最多参考最近多少条 user/assistant 轮次；0 表示不参考'),
   contextMaxChars: z.number().step(1).min(0).max(100000).default(DEFAULT_CONFIG.contextMaxChars).description('上下文窗口（字数）：历史片段的字符预算，从最新一条向前装配；0 表示不参考'),
 })
+
+/**
+ * Mark every field of {@link Config} editable in place.
+ *
+ * dsh 0.2.x derives a plugin's settings namespace from the schema this module
+ * exports and keeps only the fields whose meta is `volatile` — `volatileForm()`
+ * in `@deepseek-ai/dsh-settings` filters on it in `describe()` and in every
+ * write, and an entry whose schema has no volatile field is skipped entirely.
+ * Without this, the entry never appears in the settings directory, so no
+ * surface (Settings, the plugins page, or a companion package) can read or
+ * write it.
+ *
+ * dsh's own plugins spell this `.volatile()` from the harness' schemastery
+ * fork; this package depends on the public `schemastery`, which has no such
+ * chain method, so the same bit is set through the schema's public `meta`.
+ * The flag only means "editable without remounting the plugin": the loader
+ * commits new values into the running config reference rather than restarting
+ * the fiber — which is how this plugin reads its config anyway.
+ */
+for (const field of Object.values(Config.dict ?? {})) {
+  ;(field.meta as unknown as { volatile?: boolean }).volatile = true
+}
 
 /**
  * Validate and detach one resolved config. Unknown keys (leftovers from older

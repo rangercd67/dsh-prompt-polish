@@ -25,6 +25,30 @@ import { apply, inject } from '../src/client/index'
 import * as ui from '../src/client/ui-state'
 import { getClientSettings, setClientSettings } from '../src/client/settings'
 
+// This suite locks the boot contract, not the settings page's controls. The
+// real primitives bundle drags the whole client platform into the test graph
+// (its CSS modules and the harness util packages), so it is stubbed here: what
+// matters is that `apply()` completes against a context that provides nothing.
+vi.mock('@deepseek-ai/dsh-client-ui-primitives', () => ({
+  Checkbox: () => null,
+  SettingsForm: () => null,
+  SettingsValueField: () => null,
+  SettingsFormModel: class {
+    shell() {
+      return { available: false, writable: false, dirty: false, invalid: false, saving: false, failed: false }
+    }
+    field() {
+      return { text: '', overridden: false, invalid: false }
+    }
+    actions() {
+      return { edit: () => {}, resetField: () => {}, save: () => {}, discard: () => {} }
+    }
+    dispose() {}
+  },
+  settingsNumberField: (field: string) => ({ field, format: () => '', parse: () => undefined }),
+  settingsTextField: (field: string) => ({ field, format: () => '', parse: () => undefined }),
+}))
+
 beforeEach(() => {
   // The mirror is module-level state; start every case from the shipped default.
   setClientSettings({

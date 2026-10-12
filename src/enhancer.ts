@@ -7,6 +7,17 @@
  */
 
 import { BlockAssembler, createUserMessage } from '@deepseek-ai/dsh-llm'
+
+// `MessageSourceMap` is merge-extensible: each producer declares its own kind,
+// and dsh 0.2.x deliberately dropped the catch-all `plugin` kind this call used
+// before. Declaring `prompt-enhance` keeps the source self-describing in the
+// session log instead of borrowing the user's own kind.
+declare module '@deepseek-ai/dsh-llm' {
+  interface MessageSourceMap {
+    /** A synthetic user turn authored by the prompt-enhance helper call. */
+    'prompt-enhance': { kind: 'prompt-enhance' }
+  }
+}
 import type { GenerateOptions, FinishReason, StreamChunk } from '@deepseek-ai/dsh-llm'
 import type { EnhanceError, EnhanceResult } from './shared/protocol'
 import { normalizeOutput } from './shared/normalize'
@@ -111,7 +122,7 @@ export async function enhanceText(llm: LlmStreamFace, options: EnhanceCallOption
     const messages = [
       createUserMessage({
         content: [{ type: 'text', text: frameUserPrompt(options.text, options.context) }],
-        source: { kind: 'plugin', plugin: 'dsh-prompt-enhance' },
+        source: { kind: 'prompt-enhance' },
       }),
     ]
     const generate: GenerateOptions = {

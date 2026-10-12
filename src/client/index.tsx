@@ -11,10 +11,14 @@
 
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-client-ui-slots'
+import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
+import type {} from '@deepseek-ai/dsh-client-ui-session/client'
+import type {} from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
 import { EnhanceButton } from './EnhanceButton'
 import { UndoBar } from './UndoBar'
+import { SettingsCard, SettingsCardModel, ROW_KEY, SETTINGS_NAMESPACE } from './SettingsCard'
 import * as ui from './ui-state'
 import { dictionaries, NS } from './locales'
 import { ensureStyles } from './styles'
@@ -58,14 +62,16 @@ export function apply(ctx: ClientContext): void {
   // a working button, guards, and shortcut instead of an unset mirror.
   setClientSettings(decodeClientSettings(undefined))
 
-  // The settings mirror: re-read on every committed change so the button,
-  // the guards, and the shortcut follow Settings → 插件配置 live. The
-  // subscription disposer rides ctx.effect (ctx.inject only runs the
-  // callback; it does not manage a returned disposer).
-  ctx.inject(['settingsScope'], (settingsCtx: ClientContext) => {
-    const scope = settingsCtx.settingsScope.bind({ namespace: NS, decode: decodeClientSettings })
+  // The settings mirror: re-read on every committed change so the button, the
+  // guards, and the shortcut follow a save live. dsh 0.2.x exposes a plugin's
+  // namespace through the shared configuration-forms service; the pre-0.2
+  // `settingsScope` service this used before is gone, which left the mirror
+  // permanently on its bundled defaults — `enabled: false` never hid the
+  // button and a shortcut change never took effect.
+  ctx.inject(['configForms'], (settingsCtx: ClientContext) => {
+    const scope = settingsCtx.configForms.get(SETTINGS_NAMESPACE)
     const sync = (): void => {
-      setClientSettings(scope.getSnapshot().value ?? decodeClientSettings(undefined))
+      setClientSettings(decodeClientSettings(scope.getSnapshot().value))
     }
     sync()
     ctx.effect(() => scope.subscribe(sync), 'dsh-prompt-enhance: settings mirror')
@@ -97,6 +103,31 @@ export function apply(ctx: ClientContext): void {
         return () => {}
       }
     })
+  })
+
+  // The plugin's own configuration page. Registering `plugins.row.config`
+  // keyed by this bundle's package name and this row's id is what makes the
+  // row's configure control appear on the Plugins panel; the page draws the
+  // harness' shared settings form over the `prompt-enhance` namespace, which
+  // the host serves because `Config` marks its fields volatile.
+  ctx.inject(['configForms', 'slots'], (pageCtx: ClientContext) => {
+    const model = new SettingsCardModel(pageCtx.configForms.get(SETTINGS_NAMESPACE))
+    ctx.effect(() => () => model.dispose(), 'dsh-prompt-enhance: settings form model')
+    ctx.effect(() => pageCtx.slots.inject('plugins.row.config', () => {
+      try {
+        return pageCtx.slots.register(
+          {
+            name: 'plugins.row.config',
+            key: ROW_KEY,
+            locale: NS,
+            inject: () => ({ store: model, ...model.actions() }),
+          },
+          SettingsCard,
+        )
+      } catch {
+        return () => {}
+      }
+    }), 'dsh-prompt-enhance: settings page')
   })
 
   // The configurable shortcut: acts on the composer the user is working in;
