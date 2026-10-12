@@ -40,11 +40,23 @@ export const SETTINGS_NAMESPACE = 'prompt-enhance'
 type LocaleKey = Parameters<TranslateNS<'prompt-enhance'>>[0]
 
 /**
+ * Package name this client bundle was built under, injected by
+ * `scripts/build.mjs` (`define`). The fallback keeps the source runnable
+ * without the define — a test runner, or any consumer importing the module
+ * directly — and matches the checked-in manifest.
+ */
+declare const __PROMPT_ENHANCE_PACKAGE_NAME__: string
+const PACKAGE_NAME = typeof __PROMPT_ENHANCE_PACKAGE_NAME__ === 'string'
+  ? __PROMPT_ENHANCE_PACKAGE_NAME__
+  : 'dsh-prompt-enhance'
+
+/**
  * `plugins.row.config` key of the row this page configures: the bundle whose
  * patch declares the row, then the row id (`ui-plugin-manager` builds it the
- * same way).
+ * same way). The row id is the settings namespace and stays `prompt-enhance`
+ * across renames; the package half comes from the build.
  */
-export const ROW_KEY = 'dsh-prompt-enhance#prompt-enhance'
+export const ROW_KEY = `${PACKAGE_NAME}#prompt-enhance`
 
 /** The namespace section as it crosses the wire: only the schema keys matter here. */
 export type SettingsSection = Record<string, unknown>

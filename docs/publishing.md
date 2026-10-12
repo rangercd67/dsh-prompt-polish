@@ -50,6 +50,22 @@ Three things make `npm publish` either impossible or wrong today:
   provider through the harness LLM service. Credentials stay in the harness
   (the plugin stores none), but the text does not. Disclose it.
 
+## Already handled in this tree
+
+- **`ROW_KEY` is injected at build time** (`scripts/build.mjs`'s `define`,
+  mirrored by `vitest.config.ts`), so renaming the package can no longer detach
+  the configuration page — rebuild and the client half carries the new name.
+- **`node scripts/rename-package.mjs --name @you/dsh-prompt-enhance --repo <git url>`**
+  performs the rename and the metadata update in one step;
+  `--check` (also `npm run rename -- --check`) reports whether
+  `cordis.patch.yml`'s row name and `package.json`'s name agree. The row id
+  stays `prompt-enhance`.
+- **Peer floor tightened** to `@deepseek-ai/dsh-llm >=0.2.0-rc.2`.
+- **Own version line**: `0.3.0-dsh.1` (change with `npm version`).
+- **`NOTICE` added** (upstream attribution, changed-files list, no-endorsement)
+  and the README carries the unofficial-fork disclaimer plus the two
+  disclosures below; `NOTICE` is in the published `files` list.
+
 ## Before publishing (P0)
 
 - [ ] **Rename.** `"name": "@yourscope/dsh-prompt-enhance"` (or a distinct

@@ -14,6 +14,8 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { createElement, type ReactNode } from 'react'
 import { render } from '@testing-library/react'
 import { apply } from '../src/client/index'
@@ -119,7 +121,13 @@ describe('client configuration page', () => {
     // The panel dispatches `<bundle package>#<row id>`; getting either half
     // wrong means the row never grows a configure control.
     expect(registration.options.key).toBe(ROW_KEY)
-    expect(ROW_KEY).toBe('dsh-prompt-enhance#prompt-enhance')
+    // A rename must not detach the page: the key is `<package name>#<row id>`,
+    // where the row id is the settings namespace and never changes, and the
+    // package half comes from the build's define (vitest.config.ts mirrors it).
+    // jsdom gives `import.meta.url` a non-file scheme, so resolve from the
+    // project root vitest runs in.
+    const manifest = JSON.parse(readFileSync(resolve(process.cwd(), 'package.json'), 'utf8')) as { name: string }
+    expect(ROW_KEY).toBe(`${manifest.name}#prompt-enhance`)
     expect(registration.options.locale).toBe('prompt-enhance')
   })
 

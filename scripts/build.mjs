@@ -42,6 +42,11 @@ const clientOptions = {
   legalComments: 'none',
   sourcemap: false,
   logLevel: 'info',
+  // The Plugins page dispatches a row's configure control by
+  // `<package name>#<row id>`, so the client half needs the name it was built
+  // under. Injecting it here — instead of hardcoding it in the source — is what
+  // keeps a rename from silently detaching the configuration page.
+  define: { __PROMPT_ENHANCE_PACKAGE_NAME__: JSON.stringify(pkg.name) },
   banner: {
     js: `window.__ModuleLoader__.load({\n\tid: ${JSON.stringify(pkg.name)},\n\tfactory: (require) => {\n\t\tvar module = { exports: {} };\n\t\tvar exports = module.exports;\n\t\tObject.defineProperty(exports, Symbol.toStringTag, { value: "Module" });\n`,
   },

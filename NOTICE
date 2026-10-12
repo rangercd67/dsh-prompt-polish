@@ -1,0 +1,17 @@
+dsh-prompt-enhance (dsh desktop / 0.2.x fork)
+Copyright 2026 the fork's authors
+
+This product is a modified, unofficial fork of dsh-prompt-enhance
+(https://github.com/rongxingda/dsh-prompt-enhance), which is licensed under the
+Apache License, Version 2.0. It is not endorsed by, and is not an official
+release of, the upstream project or its author.
+
+Changes made in this fork, relative to upstream 0.2.7, are listed in
+CHANGELOG.md under 0.3.0 and summarised in docs/release-0.3.0.md. The analysis
+behind them is in docs/dsh-0.2-compat-findings.md. Files changed: src/config.ts,
+src/index.ts, src/enhance-routes.ts, src/prompts.ts, src/enhancer.ts,
+src/client/index.tsx, src/client/SettingsCard.tsx (new),
+src/client/settings-copy.ts (new), scripts/build.mjs, package.json, tests,
+docs, README.md, CHANGELOG.md.
+
+The upstream Apache License 2.0 text is retained verbatim in LICENSE.
